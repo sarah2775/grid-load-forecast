@@ -1,0 +1,17 @@
+pandas
+numpy
+matplotlib
+seaborn
+scikit-learn
+statsmodels
+pmdarima
+lightgbm
+xgboost
+shap
+optuna
+torch
+neuralforecast
+requests
+streamlit
+plotly
+jupyter
