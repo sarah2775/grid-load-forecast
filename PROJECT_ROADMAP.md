@@ -4,10 +4,12 @@ Target: ~6 weeks, fits within a 1–2 month window before applications open.
 Each week ends with a commit + a short entry in `reports/progress_log.md` (keeps your GitHub history meaningful, which reviewers do sometimes glance at).
 
 ## Week 1 — Data pipeline & EDA
-- [ ] Write `src/data_pipeline.py`: download/parse POSOCO or state discom load reports
-- [ ] Pull weather data from Open-Meteo for the same region/date range
-- [ ] Build Indian holiday/festival calendar feature
-- [ ] Merge into a clean `data/processed/load_weather.csv`
+- [ ] Download the Kaggle dataset (`prash4nt/delhi-sldc-load-data-5-min-resolution`) into `data/raw/`
+- [ ] Inspect its actual columns/format and finish `load_raw_load_data()` in `src/data_pipeline.py`
+- [ ] Decide: model total Delhi load, or break out by discom (BRPL/NDPL/BYPL/NDMC/MES)? Total is simpler and a fine v1 scope.
+- [ ] Pull weather data from Open-Meteo for Delhi (28.6139, 77.2090) over the same date range
+- [ ] Build Indian holiday/festival calendar feature (`holidays` package + manual Diwali/Holi/etc. additions)
+- [ ] Merge into a clean `data/processed/load_weather.csv` (decide on resolution — 5-min may be more than you need; hourly resampling is a reasonable v1 choice)
 - [ ] `notebooks/01_eda.ipynb`: seasonal decomposition (daily/weekly/annual), ACF/PACF, stationarity (ADF test), visualize the COVID lockdown demand shock
 - [ ] Commit + push. Write 3-4 sentences in `progress_log.md` on what you found.
 

@@ -12,6 +12,7 @@ optuna
 torch
 neuralforecast
 requests
+holidays
 streamlit
 plotly
 jupyter

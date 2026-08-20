@@ -1,6 +1,6 @@
-# ⚡ Grid Load Forecast — Multi-Region Electricity Demand Forecasting for India
+# ⚡ Grid Load Forecast — Delhi Electricity Demand Forecasting
 
-> Forecasting short-term electricity demand across Indian states using classical, ML, and deep learning methods — with uncertainty quantification and a live interactive dashboard.
+> Forecasting short-term electricity demand for Delhi (NCT) using classical, ML, and deep learning methods — with uncertainty quantification and a live interactive dashboard.
 
 [![Python](https://img.shields.io/badge/python-3.10+-blue.svg)]()
 [![Status](https://img.shields.io/badge/status-in--progress-yellow.svg)]()
@@ -13,23 +13,25 @@
 
 ## Why this project
 
-India's power grid faces a hard forecasting problem: demand has multiple overlapping seasonalities (daily, weekly, festival, and annual), is highly weather-sensitive, and saw a real regime shift during COVID-19 lockdowns. Accurate short-term load forecasting is critical for grid stability and renewable energy integration — utilities that under- or over-forecast either risk blackouts or waste generation capacity.
+Delhi's power grid faces a hard forecasting problem: demand has multiple overlapping seasonalities (daily, weekly, festival, and annual), is extremely weather-sensitive (summer AC load routinely pushes peak demand well above winter levels), and saw a real regime shift during COVID-19 lockdowns. Accurate short-term load forecasting is critical for grid stability and renewable integration — discoms that under- or over-forecast either risk local blackouts/load-shedding or waste procured generation capacity.
 
-This project builds and rigorously compares forecasting approaches — from classical statistical models to modern deep learning — on real grid data, with proper backtesting and uncertainty estimates (not just point forecasts), and ships the result as a usable dashboard.
+This project builds and rigorously compares forecasting approaches — from classical statistical models to modern deep learning — on real Delhi grid data, with proper backtesting and uncertainty estimates (not just point forecasts), and ships the result as a usable dashboard.
 
 ## Problem statement
 
-Given historical hourly/daily electricity load for a region, plus weather and calendar features, forecast demand 24–168 hours ahead with calibrated prediction intervals.
+Given historical 5-min/hourly electricity load for Delhi, plus weather and calendar features, forecast demand 24–168 hours ahead with calibrated prediction intervals.
 
 ## Data sources
 
 | Source | What | Link |
 |---|---|---|
-| POSOCO / Grid-India | Regional & state-wise load data | grid-india.in |
-| Open-Meteo | Historical weather (temperature, humidity) — free, no API key | open-meteo.com |
-| Indian public holiday calendar | Festival/holiday flags | — |
+| Kaggle: Delhi SLDC Load Data (5-min resolution) | Historical Delhi electricity load, scraped from delhisldc.org | [kaggle.com/datasets/prash4nt/delhi-sldc-load-data-5-min-resolution](https://www.kaggle.com/datasets/prash4nt/delhi-sldc-load-data-5-min-resolution) |
+| Open-Meteo | Historical weather for Delhi (temperature, humidity) — free, no API key | open-meteo.com |
+| `holidays` (Python) + manual additions | Indian public holidays & major festivals (Diwali, Holi, etc.) | — |
 
-_(Exact download scripts in `src/data_pipeline.py`. Raw data is not committed — see `data/raw/README.md` for how to fetch it.)_
+> **Note on data ethics:** delhisldc.org's `robots.txt` disallows automated scraping, so this project deliberately uses the existing, publicly available Kaggle dataset rather than scraping the site directly. Worth a line in the report — it's a real data-ethics decision, not just a technical one.
+
+_(Exact download/merge steps in `src/data_pipeline.py`. Raw data is not committed — see `data/raw/README.md` for how to fetch it.)_
 
 ## Methodology
 
