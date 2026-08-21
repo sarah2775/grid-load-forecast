@@ -118,13 +118,22 @@ def merge_all(load_df: pd.DataFrame, weather_df: pd.DataFrame, calendar_df: pd.D
     weather_hourly = weather_df.set_index("time")
     merged = load_df.join(weather_hourly, how="left")
 
-    merged["date"] = merged.index.date.astype(str)
-    calendar_df = calendar_df.reset_index()  # avoid ambiguous 'date' index+column name during merge
+    # IMPORTANT: pandas' .merge() on a column key always returns a fresh
+    # default RangeIndex and silently drops whatever index you had before
+    # (here, the datetime timestamp index). So we explicitly pull the
+    # timestamp out into a column before merging, then restore it as the
+    # index afterward, instead of losing it.
+    merged = merged.reset_index()  # 'timestamp' becomes a normal column
+    merged["date"] = merged["timestamp"].dt.date.astype(str)
+
+    calendar_df = calendar_df.reset_index()
     calendar_df["date"] = calendar_df["date"].dt.date.astype(str)
+
     merged = merged.merge(calendar_df[["date", "is_holiday", "holiday_name"]], on="date", how="left")
     merged = merged.drop(columns=["date"])
-
     merged["is_holiday"] = merged["is_holiday"].fillna(0).astype(int)
+
+    merged = merged.set_index("timestamp").sort_index()
     return merged
 
 
@@ -150,6 +159,7 @@ if __name__ == "__main__":
 
     print("Merging...")
     final_df = merge_all(hourly_load, weather_df, calendar_df)
+    assert isinstance(final_df.index, pd.DatetimeIndex), "merge_all() must return a DatetimeIndex!"
 
     out_path = PROCESSED_DIR / "load_weather_hourly.csv"
     final_df.to_csv(out_path)

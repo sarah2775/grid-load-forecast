@@ -16,3 +16,4 @@ holidays
 streamlit
 plotly
 jupyter
+nbformat
