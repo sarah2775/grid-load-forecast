@@ -139,7 +139,8 @@ def merge_all(load_df: pd.DataFrame, weather_df: pd.DataFrame, calendar_df: pd.D
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--load_csv", type=str, default="data/raw/delhi_load.csv", help="Path to the downloaded Kaggle CSV")
+    parser.add_argument("--load_csv", type=str, default="data/raw/delhi_load.csv",
+                         help="Path to the downloaded Kaggle CSV")
     parser.add_argument("--start", type=str, default="2023-04-01")
     parser.add_argument("--end", type=str, default="2024-12-31")
     args = parser.parse_args()
