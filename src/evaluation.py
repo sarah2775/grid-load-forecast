@@ -93,10 +93,18 @@ def run_backtest(df: pd.DataFrame, forecast_fn, target_col: str = "load_MW",
 
 
 def summarize(result: BacktestResult, model_name: str) -> dict:
-    """Aggregate a BacktestResult into a single row for the model comparison table."""
+    """Aggregate a BacktestResult into a single row for the model comparison table.
+
+    Reports both mean and median MAPE/RMSE: the mean is standard but can be
+    dominated by a single bad fold (seen in practice with SARIMA producing
+    an occasional numerically unstable forecast); the median is a useful
+    sanity check against that.
+    """
     return {
         "model": model_name,
         "mean_mape": result.fold_metrics["mape"].mean(),
+        "median_mape": result.fold_metrics["mape"].median(),
         "mean_rmse": result.fold_metrics["rmse"].mean(),
+        "median_rmse": result.fold_metrics["rmse"].median(),
         "n_folds": len(result.fold_metrics),
     }
