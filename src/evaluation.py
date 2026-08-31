@@ -59,9 +59,17 @@ def run_backtest(df: pd.DataFrame, forecast_fn, target_col: str = "load_MW",
     Defaults: 90 days initial training window, 24h forecast horizon, new
     fold every week (168h). Adjust step to trade off backtest thoroughness
     vs runtime — smaller step = more folds = slower but more robust estimate.
+
+    If forecast_fn raises on a given fold (e.g. a real data gap makes that
+    window unforecastable — see src/features.py's min_periods note), that
+    fold is skipped with a printed warning rather than crashing the whole
+    backtest. A single bad period in a multi-year dataset shouldn't block
+    evaluating every other period; but skipped folds are worth reporting
+    explicitly rather than silently ignoring.
     """
     fold_rows = []
     pred_rows = []
+    skipped = []
 
     for fold_i, (train_end, test_start, test_end) in enumerate(
         walk_forward_folds(len(df), initial_train_size, horizon, step)
@@ -69,7 +77,13 @@ def run_backtest(df: pd.DataFrame, forecast_fn, target_col: str = "load_MW",
         train_df = df.iloc[:train_end]
         test_df = df.iloc[test_start:test_end]
 
-        y_pred = forecast_fn(train_df, test_df)
+        try:
+            y_pred = forecast_fn(train_df, test_df)
+        except Exception as e:
+            print(f"  [skipped fold {fold_i}] {test_df.index[0]} to {test_df.index[-1]}: {e}")
+            skipped.append({"fold": fold_i, "test_start": test_df.index[0], "test_end": test_df.index[-1], "error": str(e)})
+            continue
+
         y_true = test_df[target_col].values
 
         fold_rows.append({
@@ -87,8 +101,11 @@ def run_backtest(df: pd.DataFrame, forecast_fn, target_col: str = "load_MW",
             "fold": fold_i,
         }))
 
+    if skipped:
+        print(f"\n{len(skipped)} fold(s) skipped out of {len(fold_rows) + len(skipped)} total — see warnings above.")
+
     fold_metrics = pd.DataFrame(fold_rows)
-    predictions = pd.concat(pred_rows, ignore_index=True)
+    predictions = pd.concat(pred_rows, ignore_index=True) if pred_rows else pd.DataFrame(columns=["timestamp", "y_true", "y_pred", "fold"])
     return BacktestResult(fold_metrics=fold_metrics, predictions=predictions)
 
 
