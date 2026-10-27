@@ -123,6 +123,7 @@ Full per-fold results and figures are in `02_baselines.ipynb` and
 - See `04_error_analysis.ipynb` for a deeper breakdown of *when* each model
   performs relatively better or worse (season, time of day, weather
   extremes).
+- The full-year average hides a regime split. LightGBM beats SARIMA in monsoon (3.19% vs 4.26% MAPE) and summer (4.21% vs 5.37%), and the gap is widest above 34°C (3.26% vs 7.88%), where SARIMA’s error is over twice LightGBM’s. SARIMA wins in winter/other months (3.73% vs 4.75%) and in calm 22–28°C weather (3.03% vs 4.47%). SARIMA’s full-year edge likely comes from winter covering six months of the year. Breakdowns use each model’s own backtest predictions (408 hours for SARIMA, 504 for LightGBM). A regime-switching approach is a natural extension.
 
 ## Limitations
 
